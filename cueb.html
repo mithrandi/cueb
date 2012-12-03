@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>CueB</title>
+    <link rel="stylesheet" href="styles/cueb.css">
+</head>
+<body id="app">
+    <script type="text/x-template" id="sheet-template">
+        <h1>Cue sheet</h1>
+        <div id="main">
+            <div>
+                <label for="filename">Filename</label>
+                <input id="filename" type="text" value="<%- filename %>">
+            </div>
+            <div>
+                <label for="filetype">File type</label>
+                <input id="filetype" type="text" value="<%- filetype %>">
+            </div>
+            <div>
+                <label for="artist">Artist</label>
+                <input id="artist" type="text" value="<%- artist %>">
+            </div>
+            <div>
+                <label for="title">Title</label>
+                <input id="title" type="text" value="<%- title %>">
+            </div>
+            <button id="add">Add track</button>
+            <ul id="tracks">
+            </ul>
+        </div>
+    </script>
+    <script type="text/x-template" id="track-template">
+        Hi I am a track
+    </script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
+    <script src="js/cue.js"></script>
+</body>
+</html>
