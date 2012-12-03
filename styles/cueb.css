@@ -1,0 +1,8 @@
+#cue {
+    display: block;
+    background: transparent;
+    white-space: pre;
+    font-family: monospace;
+    outline: none;
+    width: 100%;
+}

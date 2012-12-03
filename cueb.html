@@ -5,32 +5,45 @@
     <link rel="stylesheet" href="styles/cueb.css">
 </head>
 <body id="app">
+    <h1>Cue sheet</h1>
+    <div id="main"></div>
+    <button id="add">Add track</button>
+    <ul id="tracks">
+    </ul>
+    <textarea id="cue"></textarea>
     <script type="text/x-template" id="sheet-template">
-        <h1>Cue sheet</h1>
-        <div id="main">
-            <div>
-                <label for="filename">Filename</label>
-                <input id="filename" type="text" value="<%- filename %>">
-            </div>
-            <div>
-                <label for="filetype">File type</label>
-                <input id="filetype" type="text" value="<%- filetype %>">
-            </div>
-            <div>
-                <label for="artist">Artist</label>
-                <input id="artist" type="text" value="<%- artist %>">
-            </div>
-            <div>
-                <label for="title">Title</label>
-                <input id="title" type="text" value="<%- title %>">
-            </div>
-            <button id="add">Add track</button>
-            <ul id="tracks">
-            </ul>
+        <div>
+            <label for="filename">Filename</label>
+            <input id="filename" type="text" value="<%- filename %>">
+        </div>
+        <div>
+            <label for="filetype">File type</label>
+            <input id="filetype" type="text" value="<%- filetype %>">
+        </div>
+        <div>
+            <label for="artist">Artist</label>
+            <input id="artist" type="text" value="<%- artist %>">
+        </div>
+        <div>
+            <label for="title">Title</label>
+            <input id="title" type="text" value="<%- title %>">
         </div>
     </script>
     <script type="text/x-template" id="track-template">
-        Hi I am a track
+        <div>
+            <label>Title <input class="track-title" name="title" type="text" value="<%- title %>"></label>
+        </div>
+        <div>
+            <label>Artist<input class="track-artist" name="artist" type="text" value="<%- artist %>"></label>
+        </div>
+        <div>
+            <input class="track-hours" name="hours" type="number" placeholder="hh" maxlength=2 size=2 step=1 value="<%- hours %>">
+            :
+            <input class="track-minutes" name="minutes" type="number" placeholder="mm" maxlength=2 size=2 min=0 max=59 step=1 value="<%- minutes %>">
+            :
+            <input class="track-seconds" name="seconds" type="number" placeholder="ss.SSS" required maxlength=6 size=6 min=0 max=59.999 step=0.001 value="<%- seconds %>">
+        </div>
+        <button class="track-action-remove" type="button">X</button>
     </script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>

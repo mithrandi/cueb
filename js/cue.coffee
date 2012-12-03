@@ -6,8 +6,7 @@ class Sheet extends Backbone.Model
         title: ''
 
 
-    constructor: ->
-        super()
+    initialize: ->
         @tracks = new TrackCollection
 
 
@@ -19,10 +18,10 @@ class Sheet extends Backbone.Model
         timestamp = 0
         index = 1
         lastDuration = 0
-        for track in @get('tracks')
+        @tracks.each (track) =>
             result = track.flatten index, timestamp, @get('artist')
             lines = lines.concat result
-            timestamp += track.duration
+            timestamp += track.getDuration()
             index += 1
         return lines.join '\n'
 
@@ -43,26 +42,36 @@ formatTimestamp = (timestamp) ->
     return twoDigits(minutes) + ':' + twoDigits(seconds) + ':' + twoDigits(frames)
 
 
+
 class Track extends Backbone.Model
     defaults:
         title: ''
-        artist: null
-        duration: 0
+        artist: ''
+        hours: 0
+        minutes: 0
+        seconds: 0
+
+
+    setDuration: (hours, minutes, seconds) ->
+        @set 'duration',
+
+
+    getDuration: ->
+        return @get('hours') * 3600 + @get('minutes') * 60 + @get('seconds')
 
 
     flatten: (index, timestamp, sheetArtist) ->
         ["  TRACK #{ twoDigits(index) } AUDIO",
-         "    TITLE #{ @get('title') } \"",
-         "    PERFORMER \"#{ @get('artist') ? sheetArtist }\"",
+         "    TITLE \"#{ @get('title') }\"",
+         "    PERFORMER \"#{ @get('artist') || sheetArtist }\"",
          "    INDEX 01 #{ formatTimestamp(timestamp) }"]
 
 
 
 class AppView extends Backbone.View
-    constructor: (@el, @sheet) ->
-        super()
-        @sheetView = new SheetView(model: @sheet)
-        @$el.append(@sheetView.render().el)
+    el: '#app'
+    initialize: ->
+        @sheetView = new SheetView(model: @options.sheet)
 
 
     render: ->
@@ -72,24 +81,38 @@ class AppView extends Backbone.View
 
 
 class SheetView extends Backbone.View
-    tagName: 'div'
+    el: '#app'
     template: _.template($('#sheet-template').html())
     events:
         'change #main input': 'changed'
         'click #add': 'addTrack'
+        'focus #cue': 'focused'
+        'change #cue': 'cueEdited'
+
 
     initialize: ->
+        @model.on 'change', this.render, this
         @model.tracks.on 'add', this.trackAdded, this
+        @model.tracks.on 'change', this.render, this
+        @model.tracks.on 'remove', this.render, this
 
 
     render: ->
-        @$el.html(@template(@model.toJSON()))
+        @$('#main').html @template(@model.toJSON())
+        @$('#cue').val @model.flatten()
         return @
 
 
     changed: (event) ->
         elem = event.target
         @model.set elem.id, elem.value
+
+
+    focused: (event) ->
+        event.target.select()
+
+
+    cueEdited: (event) ->
 
 
     addTrack: ->
@@ -100,31 +123,50 @@ class SheetView extends Backbone.View
     trackAdded: (track) ->
         view = new TrackView(model: track)
         @$('#tracks').append(view.render().el)
+        @render()
 
 
 
 class TrackCollection extends Backbone.Collection
     model: Track
+    url: 'dummy'
 
 
 
 class TrackView extends Backbone.View
     tagName: 'li'
     template: _.template($('#track-template').html())
+    events:
+        'change input': 'changed'
+        'click .track-action-remove': 'remove'
+
 
     initialize: ->
-        @model.on 'remove', this.remove, this
+        @model.on 'remove', this.removed, this
+
 
     render: ->
         @$el.html(@template(@model.toJSON()))
         return @
 
+
     remove: ->
+        @model.destroy()
+
+
+    removed: ->
         @$el.remove()
+
+
+    changed: (event) ->
+        elem = event.target
+        @model.set elem.name, elem.value
 
 
 
 $(document).ready ->
+    Backbone.sync = ->
+        return null
     window.sheet = new Sheet
-    window.app = new AppView($('#app'), sheet)
+    window.app = new AppView(sheet: sheet)
     window.app.render()
